@@ -1,0 +1,18 @@
+{
+  "name": "quantova-consensus-spec-test",
+  "version": "0.1.0",
+  "description": "Public test labs and live endpoints for verifying that Quantova's consensus exhibits a post-quantum structure.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test labs/*.test.js",
+    "labs": "node --test labs/*.test.js",
+    "lab:connectivity": "node --test labs/00-connectivity.test.js",
+    "lab:signature": "node --test labs/01-signature-scheme.test.js",
+    "lab:no-ec": "node --test labs/02-no-elliptic-curve.test.js",
+    "lab:no-vrf": "node --test labs/03-no-vrf-leadership.test.js",
+    "lab:sha3": "node --test labs/04-sha3-hashing.test.js",
+    "lab:finality": "node --test labs/05-deterministic-finality.test.js"
+  },
+  "license": "BUSL-1.1"
+}
