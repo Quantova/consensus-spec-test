@@ -102,6 +102,6 @@ test, then the live checks run.
 | [security-documentation-repository](https://github.com/Quantova/security-documentation-repository) | Security policy and bug bounty. |
 
 ## License
-
+## > USA Quantova Inc Owners of IP 
 © 2026 Quantova Inc. See [LICENSE.md](LICENSE.md). These labs are provided for inspection and
 educational use and are not a security audit, a guarantee, or financial advice.
