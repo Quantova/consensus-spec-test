@@ -35,7 +35,7 @@ These labs are an **inspection harness**, not a security proof. Read
 Free **TQTOV** for testnet is available from the faucet (see https://quantova.org). The full
 endpoint and method reference is in [docs/endpoints.md](docs/endpoints.md).
 
----
+--- # Consensus
 
 ## Quickstart
 
