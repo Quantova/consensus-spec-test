@@ -82,6 +82,7 @@ scheme reference.
 | [How the labs work](docs/how-the-labs-work.md) | The verification approach and how to adapt a lab to the node's exact responses. |
 | [What the labs prove](docs/what-the-labs-prove.md) | The honest scope: inspection vs. proof. Read this. |
 | [Endpoints](docs/endpoints.md) | Live endpoints and the `q_` methods the labs use. |
+| [Public-key pinning](pubkey-pinning.md) | How an account is bound to its first public key, closing the address second-preimage margin without changing the H160 address. |
 
 ---
 
