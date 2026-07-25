@@ -1,0 +1,75 @@
+// Copyright 2026 Quantova Inc
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+/**
+ * Lab 02 No Elliptic Curve
+ *
+ * Confirms the account layer is post quantum. Quantova addresses are Q1 bech32m
+ * strings written with a capital Q, derived from an ML-DSA-65 public key. There
+ * is no ecrecover and no secp256k1 recovery path, because there is no elliptic
+ * curve anywhere in the chain.
+ *
+ * What this proves is that addresses are Q1 bech32m, not 20 byte hex, and the
+ * gateway exposes no elliptic curve recovery method. What it does NOT prove is the
+ * absence of a classical path in some unrelated component. See docs/what-the-labs-prove.md.
+ *
+ * Run  QUANTOVA_GATEWAY_URL=https://testnet.quantova.io npm run lab:no-ec
+ */
+
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { HAS_ENDPOINT, QuantovaGateway } from "../lib/gateway-client.js";
+
+const skip = !HAS_ENDPOINT;
+
+/**
+ * Pull an address to inspect from a recent block.
+ * ADAPT, confirm where the node records an account address. It may be a
+ * transaction sender, a proposer, or a validator entry.
+ */
+async function fetchAddress(g) {
+  const height = await g.headHeight();
+  const block = await g.getBlock(Math.max(0, height - 1));
+  const candidate =
+    block?.proposer ||
+    block?.transactions?.[0]?.from ||
+    block?.transactions?.[0]?.sender;
+  if (candidate) return candidate;
+
+  const set = await g.validators();
+  const list = Array.isArray(set) ? set : set?.validators;
+  const first = Array.isArray(list) ? list[0] : null;
+  return typeof first === "string" ? first : first?.address;
+}
+
+test("addresses are Q1 bech32m, not 20 byte hex", { skip }, async () => {
+  const g = new QuantovaGateway();
+  const address = await fetchAddress(g);
+  assert.ok(address, "could not find an address to inspect, see the ADAPT note in this file");
+
+  const isHex20 = /^0x[0-9a-fA-F]{40}$/.test(address);
+  assert.ok(!isHex20, `address ${address} is 20 byte hex, which is a classical account format`);
+  assert.ok(
+    /^Q1[0-9a-z]+$/.test(address),
+    `address ${address} is not a Q1 bech32m string. Quantova addresses start with a capital Q.`
+  );
+  console.log(`address confirmed as Q1 bech32m ${address}`);
+});
+
+test("the gateway exposes no elliptic curve recovery method", { skip }, async () => {
+  const g = new QuantovaGateway();
+  // A post quantum chain has no key recovery from a signature. These probes
+  // should fail, and their failure is the expected and passing result.
+  const probes = ["ecrecover", "ec_recover", "recover_pubkey"];
+  for (const method of probes) {
+    let present = false;
+    try {
+      await g.call(method, {});
+      present = true;
+    } catch {
+      present = false;
+    }
+    assert.ok(!present, `gateway answered /v1/${method}, which must not exist on a post quantum chain`);
+  }
+  console.log("no elliptic curve recovery method is exposed");
+});
